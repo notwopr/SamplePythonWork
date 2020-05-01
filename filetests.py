@@ -3,7 +3,7 @@ Title: File Test Bot
 Date Started: June 8, 2019
 Author: David Hyongsik Choi
 Legal:  All rights reserved.  This code may not be used, distributed, or copied without the express written consent of David Hyongsik Choi.
-Purpose: The purpose of the File Test Bot is to make sure a saved file has been preserved properly, only testing whether the length of the dataframe is the same as when it was saved.
+Purpose: This script contains functions pertaining to checking the integrity of files.
 
 """
 
