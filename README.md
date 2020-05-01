@@ -1,5 +1,5 @@
 # SamplePythonWork
-For the past year, I have been developing and researching algorithms that would improve investment decisions in US Based equities.  I have chosen Python and its libraries to write the code.  Included here is a sample of the project to give you an idea of my Python competency.
+For the past year, I have been developing and researching algorithms that would improve investment decisions in US Based equities.  I have chosen Python and its libraries to write the code.  Included here is a sample of one part of my project to give you an idea of my Python competency.
 
 The program here is composed of several files.  When you run the program, the host machine calls an API, pulls data, wrangles and cleans it, and saves it to the local disk.  Specifically it pulls all price histories for all US stocks from the NYSE and NASDAQ exchanges, as well as price histories of the US stock exchange indexes (Dow, S&P 500, and NASDAQ) into separate files for each ticker as well as creating an archiving a master dataframe that combines all currently traded ticker histories into one large dataframe for certain functions to reduce runtime.
 
