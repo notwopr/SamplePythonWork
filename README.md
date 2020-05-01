@@ -6,6 +6,7 @@ The program here is composed of several files.  When you run the program, the ho
 Not only does it run a price history pull, it also creates a database of the ticker, their full name, their age, starting date of history and ending dates of history.
 
 INSTRUCTIONS HOW TO RUN
+The script will not run without the API keys to access the API data source.  I removed the keys from the code for security reasons.  Please contact me if you wish to run this script in full.
 To run the script, you would run the 'MASTERSCRIPT' file.  However, you need to modify the settings in the 'computersettings' file so that it reflects the host machine being used to run the script, in particular, setting the directory location to which the download will save the data, and the number of processors you wish to use for the multiprocessor.
 
 WARNING: You'll notice that the price data for the US exchange indexes will be blank.  That is because the data vendor shut down.  The individual stock tickers should still be available and up to date.
