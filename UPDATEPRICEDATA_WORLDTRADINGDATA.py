@@ -19,7 +19,7 @@ endpoint = ["stock", "history"]  # WTD Realtime Prices  # WTD Historical Prices
 
 apiprep = ["api_token="]
 
-apiprepk = ["YncbuuilRUEfRrf71Uz1UkybBKNRUbT9NMcSGyg5H9mrOCAbvuPSGsKiAq1V"]
+apiprepk = [""]  # API KEY REMOVED FOR SECURITY PURPOSES
 
 
 def parametizer(v, w, x, y):  # x=startdate; y=enddate

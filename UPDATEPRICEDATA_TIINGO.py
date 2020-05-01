@@ -23,7 +23,7 @@ endpoint = ["tiingo/daily", "prices", "iex"]  # TIINGO
 
 apiprep = ["token="]  # TIINGO
 
-apiprepk = ["ea0e9806c6cf888517ed0a6e99527f6f5b0467ad"]  # TIINGO
+apiprepk = [""]  # API KEY REMOVED FOR SECURITY PURPOSES
 
 
 def parametizer(x, y):  # x=startdate; y=enddate
