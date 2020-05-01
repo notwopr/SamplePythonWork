@@ -8,6 +8,8 @@ Not only does it run a price history pull, it also creates a database of the tic
 INSTRUCTIONS HOW TO RUN
 To run the script, you would run the 'MASTERSCRIPT' file.  However, you need to modify the settings in the 'computersettings' file so that it reflects the host machine being used to run the script, in particular, setting the directory location to which the download will save the data, and the number of processors you wish to use for the multiprocessor.
 
+WARNING: You'll notice that the price data for the US exchange indexes will be blank.  That is because the data vendor shut down.  The individual stock tickers should still be available and up to date.
+
 EXTRA MATERIAL
 To provide you with a sample that contrasts from an API data pull, I also included a statistical research bot that graphs and visualizes how many samples it would take for an additional sample to move the average of the population an amount less than a specified threshold.
 
