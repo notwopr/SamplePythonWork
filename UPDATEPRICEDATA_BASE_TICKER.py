@@ -1,11 +1,14 @@
 """
 Title: Update Price Data - Ticker Data
 Date Started: April 26, 2019
-Version: 1.0
-Vers Date: Nov 9, 2019
+Version: 1.1
+Version Start Date: May 5, 2020
 Author: David Hyongsik Choi
 Legal:  All rights reserved.  This code may not be used, distributed, or copied without the express written consent of David Hyongsik Choi.
 Purpose: Retrieve list of tickers of all the companies listed on the NYSE and NASDAQ.
+
+Version Notes:
+1.1: Simplify Code.
 """
 
 # IMPORT TOOLS
@@ -20,118 +23,31 @@ from filelocations import savetopkl
 
 
 def symfilt(x):
-    y = x.get("symbol")
-    z = x.get("name")
-    return {'symbol': y, 'name': z}
-
-
-def checkaccuracy(a, b, c, verbose):  # a = stocklist at issue; b = correct length; c = tolerance
-    # YOUR LIST'S TALLY
-    tally = len(a)
-
-    # ACTUAL NUMBER OF NASDAQ + NYSE STOCKS TRADEABLE FROM INDEPENDENT SOURCE
-    truetally = b
-    tolerance = c
-
-    # CALCULATE DIFFERENCE
-    diff = tally - truetally
-
-    # REPORT FINDINGS
-    if tally in range(truetally - tolerance, truetally + tolerance):
-        if verbose == 'verbose':
-            print(
-                "%s \n %s %s %s \n %s %s %s \n %s %+d \n %s%s"
-                % (
-                    "YAY!! THE LIST IS ACCURATE!",
-                    "YOUR LIST:",
-                    tally,
-                    "SYMBOLS",
-                    "TRADEABLE US STOCKS:",
-                    truetally,
-                    "SYMBOLS",
-                    "DIFFERENCE:",
-                    diff,
-                    "TOLERANCE: +/-",
-                    tolerance,
-                )
-            )
-        return True
-    else:
-        if verbose == 'verbose':
-            print(
-                "%s \n %s %s %s \n %s %s %s \n %s %+d \n %s%s"
-                % (
-                    "WARNING!! THE LIST IS NOT ACCURATE!",
-                    "YOUR LIST:",
-                    tally,
-                    "SYMBOLS",
-                    "TRADEABLE US STOCKS:",
-                    truetally,
-                    "SYMBOLS",
-                    "DIFFERENCE:",
-                    diff,
-                    "TOLERANCE: +/-",
-                    tolerance,
-                )
-            )
-        return False
+    return {'symbol': x['symbol'], 'name': x['name']}
 
 
 def storealltickers(destfolder, tickerfilename_all, tickerfilename_common):
-    # API PREP
-    base = ["https://cloud.iexapis.com/"]
 
-    endpoint = ["stable", "ref-data/symbols"]
-
-    apiprep = ["token="]
-
-    apiprepk = ["sk_515e8be68f01497cabba3d0fcaa18638"]
-
-    param = [["filter=symbol,name,exchange,type"]]
-
-    paramstr = "&".join(param[0])
-
-    url = (
-        base[0]
-        + "/"
-        + endpoint[0]
-        + "/"
-        + endpoint[1]
-        + "?"
-        + apiprep[0]
-        + apiprepk[0]
-        + "&"
-        + paramstr
-    )
+    tickerurl = 'https://cloud.iexapis.com/stable/ref-data/symbols?token=sk_515e8be68f01497cabba3d0fcaa18638&filter=symbol,name,exchange,type'
 
     # RETRIEVE AND STORE TICKER DATA, AND RECORD TIMESTAMP OF RETRIEVAL
-    tickraw = rq.get(url)
+    tickraw = rq.get(tickerurl)
     ticktxt = tickraw.text
     ticklist = js.loads(ticktxt)
 
     # FILTER OUT NON-NYSE AND NON-NASDAQ STOCKS AS WELL AS NON-COMMON SHARES
-    alltickers = list(
-        filter(lambda x: x["exchange"] == "NAS" or x["exchange"] == "NYS", ticklist)
-    )
+    alltickers = list(filter(lambda x: x["exchange"] == "NAS" or x["exchange"] == "NYS", ticklist))
 
     # FILTER OUT NON-COMMON SHARES
-    commontickers = list(
-        filter(lambda x: x["type"] == "cs", alltickers)
-    )
+    commontickers = list(filter(lambda x: x["type"] == "cs", alltickers))
 
     # FILTER THE LIST TO CONTAIN ONLY TICKER SYMBOLS and NAMES
     drafttickall = list(map(symfilt, alltickers))
     drafttickcommon = list(map(symfilt, commontickers))
 
     # REMOVE ANY DUPLICATES
-    finaltickall = []
-    finaltickcommon = []
-    for pair in [[drafttickall, finaltickall], [drafttickcommon, finaltickcommon]]:
-        uniquesymbols = []
-        for stockdict in pair[0]:
-            if stockdict['symbol'] not in uniquesymbols:
-                uniquesymbols.append(stockdict['symbol'])
-                pair[1].append(stockdict)
+    finaltickall = [i for n, i in enumerate(drafttickall) if i not in drafttickall[n + 1:]]
+    finaltickcommon = [i for n, i in enumerate(drafttickcommon) if i not in drafttickcommon[n + 1:]]
 
     # EDIT LIST FOR TIINGO SYNTAX
     for stocklist in [finaltickall, finaltickcommon]:
@@ -170,5 +86,5 @@ def storealltickers(destfolder, tickerfilename_all, tickerfilename_common):
     # SAVE TO FILE
     savetopkl(tickerfilename_all, destfolder, finalalldf)
     savetopkl(tickerfilename_common, destfolder, finalcommondf)
-    finalalldf.to_csv(index=False, path_or_buf=destfolder / '{}.csv'.format(tickerfilename_all))
-    finalcommondf.to_csv(index=False, path_or_buf=destfolder / '{}.csv'.format(tickerfilename_common))
+    finalalldf.to_csv(index=False, path_or_buf=destfolder / f'{tickerfilename_all}.csv')
+    finalcommondf.to_csv(index=False, path_or_buf=destfolder / f'{tickerfilename_common}.csv')

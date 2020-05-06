@@ -1,78 +1,46 @@
 """
 Title: Stock Price Retriever - Tiingo API
 Date Started: March 16, 2019
+Version: 1.1
+Version Start Date: May 5, 2020
 Author: David Hyongsik Choi
 Legal:  All rights reserved.  This code may not be used, distributed, or copied
     without the express written consent of David Hyongsik Choi.
-Purpose: The purpose of the Golden Retriever Module is to retrieve prices from
-    a single day and prices within a given date range.
+Purpose: Retrieve prices for a given stock.
 
-ON TIINGO BEHAVIOR: TIINGO WILL RETURN ANY AND ALL PRICES AVAILABLE WITHIN AN GIVEN DATE RANGE.  IT WON'T RETURN ANY ENTRIES FOR DATES WHERE THE PRICES ARE NOT AVAILABLE.  IF THERE ARE NO PRICES AVAILABLE WITHIN A DATE RANGE, IT WILL RETURN A BLANK.
+ON TIINGO BEHAVIOR: TIINGO WILL RETURN ANY AND ALL PRICES AVAILABLE WITHIN A GIVEN DATE RANGE.  IT WON'T RETURN ANY ENTRIES FOR DATES WHERE THE PRICES ARE NOT AVAILABLE.  IF THERE ARE NO PRICES AVAILABLE WITHIN A DATE RANGE, IT WILL RETURN A BLANK.
+
+Version Notes:
+1.1: Simplify code.
 
 """
 
 
 # IMPORT TOOLS
+#   STANDARD LIBRARY IMPORTS
+#   THIRD PARTY IMPORTS
 import requests as rq
+import pandas as pd
+#   LOCAL APPLICATION IMPORTS
 
 
-# API PREP
-base = ["https://api.tiingo.com"]  # TIINGO
+def stockpriceretrieval(stock, start_date, end_date):
 
-endpoint = ["tiingo/daily", "prices", "iex"]  # TIINGO
+    # SET PRICE URL
+    stockpriceurl = f'https://api.tiingo.com/tiingo/daily/{stock}/prices?token=ea0e9806c6cf888517ed0a6e99527f6f5b0467ad&startDate={start_date}&endDate={end_date}&resampleFreq=daily&format=json&columns=date,adjClose'
 
-apiprep = ["token="]  # TIINGO
+    # RETRIEVE PRICES
+    prices = rq.get(stockpriceurl)
+    # PARSE PRICES
+    prices = prices.json()
 
-apiprepk = [""]  # API KEY REMOVED FOR SECURITY PURPOSES
+    # CONVERT TO DATAFRAME
+    prices = pd.DataFrame(prices)
 
+    # CHANGE ORDER OF COLUMNS
+    prices = prices[["date", "adjClose"]]
+    prices = prices.rename(columns={"adjClose": stock})
 
-def parametizer(x, y):  # x=startdate; y=enddate
-    param = [
-        apiprep[0] + apiprepk[0],
-        "startDate=" + x,
-        "endDate=" + y,
-        "resampleFreq=daily",
-        "format=json",
-        "columns=date,adjClose",
-    ]
-    param_str = "&".join(param)
-    return param_str
-
-
-def retriever(w, x, y, z):
-    # w=stock, x=startdate, y=enddate,
-    # z=(0=daterange/singledate, 1=realtime, 2=earliestdate)
-    url = [
-        (
-            base[0]
-            + "/"
-            + endpoint[0]
-            + "/"
-            + w
-            + "/"
-            + endpoint[1]
-            + "?"
-            + parametizer(x, y)
-        ),
-        (
-            base[0]
-            + "/"
-            + endpoint[2]
-            + "/"
-            + w
-            + "?"
-            + apiprep[0]
-            + apiprepk[0]
-        ),
-        (
-            base[0]
-            + "/"
-            + endpoint[0]
-            + "/"
-            + w
-            + "?"
-            + apiprep[0]
-            + apiprepk[0]
-        ),
-    ]
-    return rq.get(url[z])
+    # RE-NUMBER INDEX
+    prices.reset_index(drop=True, inplace=True)
+    return prices

@@ -48,11 +48,11 @@ folder_index = [
 tickerlistall_name = 'tickerlist_all'
 tickerlistcommon_name = 'tickerlist_common'
 daterangedb_name = 'daterangedb'
-tickerlistall_source = TICKERS / '{}.pkl'.format(tickerlistall_name)
-tickerlistcommon_source = TICKERS / '{}.pkl'.format(tickerlistcommon_name)
-tickerlistall_source_csv = TICKERS / '{}.csv'.format(tickerlistall_name)
-tickerlistcommon_source_csv = TICKERS / '{}.csv'.format(tickerlistcommon_name)
-daterangedb_source = DATE_RESULTS / '{}.pkl'.format(daterangedb_name)
+tickerlistall_source = TICKERS / f'{tickerlistall_name}.pkl'
+tickerlistcommon_source = TICKERS / f'{tickerlistcommon_name}.pkl'
+tickerlistall_source_csv = TICKERS / f'{tickerlistall_name}.csv'
+tickerlistcommon_source_csv = TICKERS / f'{tickerlistcommon_name}.csv'
+daterangedb_source = DATE_RESULTS / f'{daterangedb_name}.pkl'
 alltickerfiles = [
     tickerlistall_source,
     tickerlistcommon_source,
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         downloadfinish = checknum(STOCKPRICES, correct, '')
 
     '''EARLIEST DATE DATABASE (DEPENDENT ON STOCK PRICE DOWNLOAD)'''
-    create_daterangedb(DATE_DUMP, tickerlistall_source, INDEXPRICES, STOCKPRICES, DATE_RESULTS, daterangedb_name)
+    create_daterangedb(DATE_DUMP, tickerlistall_source, STOCKPRICES, DATE_RESULTS, daterangedb_name)
 
     '''CREATE PRICE HISTORY MATRIX (DEPENDENT ON STOCK PRICE DOWNLOAD)'''
     allprice_matrix(daterangedb_source, tickerlistall_source, STOCKPRICES, PRICES)

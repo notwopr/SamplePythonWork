@@ -52,4 +52,4 @@ def create_fullinfotickerdatabase(tickerlistcommon_source, tickerlistall_source,
     # ARCHIVE FILE
     filename = 'fullinfo_db'
     savetopkl(filename, destfolder, allticker_fullnames)
-    allticker_fullnames.to_csv(index=False, path_or_buf=destfolder / '{}.csv'.format(filename))
+    allticker_fullnames.to_csv(index=False, path_or_buf=destfolder / f'{filename}.csv')

@@ -1,9 +1,13 @@
 """
 Title: Update Price Data Base - Prices
 Date Started: June 7, 2019
+Version: 1.1
+Version Start Date: May 5, 2020
 Author: David Hyongsik Choi
 Legal:  All rights reserved.  This code may not be used, distributed, or copied without the express written consent of David Hyongsik Choi.
 Purpose: The purpose of the All Price Bot is to retrieve the entire price history of a stock.  It will return all days including non-trading days (filled in with previous last closing price).  Allows for the option to fill in the unavailable rows with Nan or the last available price.
+Version Notes:
+1.1: Cleaned up code.  Added FRED Nasdaq API pull.  Removed startdate and enddate specification.
 """
 
 # IMPORT TOOLS
@@ -16,8 +20,8 @@ from multiprocessing import Pool
 #   THIRD PARTY IMPORTS
 import pandas as pd
 #   LOCAL APPLICATION IMPORTS
-from UPDATEPRICEDATA_WORLDTRADINGDATA import retriever as mret
-from UPDATEPRICEDATA_TIINGO import retriever as gret
+from UPDATEPRICEDATA_FRED import indexpriceretrieval
+from UPDATEPRICEDATA_TIINGO import stockpriceretrieval
 from computersettings import use_cores, chunksize
 
 
@@ -26,28 +30,9 @@ def allpricebot(stock, start_date, end_date):
 
     # RETRIEVE STORED PRICES
     if stock in ["^DJI", "^INX", "^IXIC"]:
-        prices = mret(stock, start_date, end_date, 0)
-        prices = prices.json()
-        prices = pd.DataFrame(prices)
-        # DELETE COLUMN CONTAINING STOCK TICKER
-        prices = prices.drop(labels="name", axis=1)
-        # KEEP ONLY CLOSING PRICE COLUMN
-        prices.iloc[:, 0] = prices.iloc[:, 0].apply(lambda x: x["close"])
-        # ADD MISSING INDEX
-        prices.reset_index(inplace=True)
-        prices.rename(columns={"index": "date", "history": stock}, inplace=True)
-        # CONVERT PRICES FROM STRINGS TO FLOATS
-        prices.iloc[:, 1] = prices.iloc[:, 1].astype(float)
+        prices = indexpriceretrieval(stock, '', '')
     else:
-        prices = gret(stock, start_date, end_date, 0)
-        prices = prices.json()
-        prices = pd.DataFrame(prices)
-        # CHANGE ORDER OF COLUMNS
-        prices = prices[["date", "adjClose"]]
-        prices = prices.rename(columns={"adjClose": stock})
-
-    # RE-NUMBER INDEX
-    prices.reset_index(drop=True, inplace=True)
+        prices = stockpriceretrieval(stock, start_date, end_date)
 
     return prices
 
@@ -57,8 +42,8 @@ def download_prices(targetfolder, start, end, symbol):
 
     try:
         prices = allpricebot(symbol, start, end)
-        prices.iloc[:, 0] = prices.iloc[:, 0].apply(dup.parse)
-        prices.iloc[:, 0] = prices.iloc[:, 0].apply(dt.datetime.date)
+        prices['date'] = prices['date'].apply(dup.parse)
+        prices['date'] = prices['date'].apply(dt.datetime.date)
     except (ValueError, KeyError, TypeError):
         dates = pd.date_range(end, end)
         prices = pd.DataFrame(dates)
