@@ -27,7 +27,7 @@ import pandas as pd
 def stockpriceretrieval(stock, start_date, end_date):
 
     # SET PRICE URL
-    stockpriceurl = f'https://api.tiingo.com/tiingo/daily/{stock}/prices?token=ea0e9806c6cf888517ed0a6e99527f6f5b0467ad&startDate={start_date}&endDate={end_date}&resampleFreq=daily&format=json&columns=date,adjClose'
+    stockpriceurl = f'https://api.tiingo.com/tiingo/daily/{stock}/prices?token=&startDate={start_date}&endDate={end_date}&resampleFreq=daily&format=json&columns=date,adjClose'
 
     # RETRIEVE PRICES
     prices = rq.get(stockpriceurl)
